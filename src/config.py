@@ -1749,9 +1749,13 @@ class Config:
                     headers = dict(ch.get('extra_headers') or {})
                     if ch['base_url'] and 'aihubmix.com' in ch['base_url']:
                         headers.setdefault('APP-Code', 'GPIJ3886')
+                    # ✅ 新增：Siemens SDC 网关注入 x-api-key
+                    if ch['base_url'] and 'sdc.siemens.cloud' in ch['base_url']:
+                        headers['x-api-key'] = api_key
+                        litellm_params['api_key'] = 'dummy'
                     if headers:
                         litellm_params['extra_headers'] = headers
-
+    
                     model_list.append({
                         'model_name': model_name,
                         'litellm_params': litellm_params,
