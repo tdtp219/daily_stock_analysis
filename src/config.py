@@ -2506,6 +2506,13 @@ def extra_litellm_params(model: str, config: Config) -> Dict[str, Any]:
             params["api_base"] = config.openai_base_url
         if config.openai_base_url and "aihubmix.com" in config.openai_base_url:
             params["extra_headers"] = {"APP-Code": "GPIJ3886"}
+        # ✅ 新增：Siemens SDC 网关使用 x-api-key Header 而非 Authorization: Bearer
+        if config.openai_base_url and "sdc.siemens.cloud" in config.openai_base_url:
+            real_key = (config.openai_api_keys[0] if config.openai_api_keys else None) \
+                       or config.openai_api_key
+            if real_key:
+                params["extra_headers"] = {"x-api-key": real_key}
+                params["api_key"] = "dummy"  # 防止 LiteLLM 把真实 Key 放入 Bearer
     return params
 
 
